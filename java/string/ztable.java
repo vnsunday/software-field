@@ -21,6 +21,7 @@ class ztable {
 	Scalar clwhite = new Scalar(255, 255, 255);
 	Scalar clyel = new Scalar(0,2255,255);
 	Scalar cl_blue = new Scalar(255, 0, 0);
+	Scalar cl_red = new Scalar(0, 0, 255); 
 	Scalar cl_lgreen = new Scalar(100, 100, 150);
 	Scalar cl_lblue = new Scalar(150, 100, 100);
 	// Configuration END ==============================
@@ -93,8 +94,8 @@ class ztable {
 		 * 		(1.1) Highlight prefix and prefix-matched (starting at ix)
 		 * 		(1.2) Highlight updated Z[ix] 
 		 * 	(c2) 
-		 * 		(2.1) visualize zero matched prefix
-		 * 		(2.2) Highlight updated Z[ix] 
+		 * 		(2.1) visualize zero matched prefix. (by red border)
+		 * 	(c3) Highlight updated Z[ix] 
 		 *============================================================*/
 		
 		// c1.
@@ -116,22 +117,39 @@ class ztable {
 					cl_blue, 
 					2);
 			
-			// c1.2) Highlight updated Z[ix]
-			Imgproc.rectangle(img, new Rect(
-					 		new Point(nMarginL + ix*nWCH, nMarginT + 3 * nWCH), 
-					 		new Size(nWCH, nWCH)), 
-							cl_blue, 
-							Imgproc.FILLED);
-			Imgproc.putText(img, String.format("%d", Z[ix]), 
-						new Point(nMarginL + ix*nWCH + nWCH_mgr, 
-								  nMarginT + 3 * nWCH + nWCH_mgr), 
-						Imgproc.FONT_HERSHEY_SCRIPT_SIMPLEX
-						, 1, clyel);			
 		}
 		// c2) 
 		else {
 			// c2.1.)  Visualize zero matched prefix
+			// Visualize mismatched character by Red border
+			Imgproc.rectangle(img, 
+					new Rect(
+							new Point(nMarginL, nMarginT), 
+							new Size(nWCH, nWCH)), 
+					cl_red, 
+					2);
+			Imgproc.rectangle(img, 
+					new Rect(
+							new Point(nMarginL + ix * nWCH, nMarginT), 
+							new Size(nWCH, nWCH)), 
+					cl_red, 
+					2);
 		}
+		
+		// c3) Highlight updated Z[ix]
+		Imgproc.rectangle(img, new Rect(
+				 		new Point(nMarginL + ix*nWCH, nMarginT + 3 * nWCH), 
+				 		new Size(nWCH, nWCH)), 
+						cl_blue, 
+						Imgproc.FILLED);
+		Imgproc.putText(img, String.format("%d", Z[ix]), 
+					new Point(nMarginL + ix*nWCH + nWCH_mgr, 
+							  nMarginT + 3 * nWCH + nWCH_mgr), 
+					Imgproc.FONT_HERSHEY_SCRIPT_SIMPLEX
+					, 1, clyel);			
+	}
+	
+	public void draw_ultilize_z_jumping() {
 		
 	}
 	
@@ -206,10 +224,7 @@ class ztable {
 	public void ztable_visualize() {
 		/*============================================================
          * 	Configuration
-         *============================================================*/
-		
-
-						
+         *============================================================*/					
 		String str = "abcdef";
 		int n = str.length();
 		Mat img = new Mat(nW, nH, CvType.CV_8UC3, new Scalar(0, 0, 0));
@@ -292,7 +307,7 @@ class ztable {
         				, 1, clyel);
         	}
 
-        	// v5) [l,r] 
+        	// v5) [l,r]
         }
 	}
 	
