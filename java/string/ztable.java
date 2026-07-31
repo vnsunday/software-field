@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -14,14 +16,15 @@ class ztable {
     int nW = 1280;  /// 720p Standard
 	int nH = 720;
 	int nMarginL = 100;  // Left
-	int nMarginT = 100;  // Top
+	int nMarginT = 200;  // Top
 	int nWCH = 50; // Character - width 
 	int nWCH_mgr = nWCH / 5; // Margin of Character box
 	
 	Scalar clwhite = new Scalar(255, 255, 255);
 	Scalar clyel = new Scalar(0,2255,255);
 	Scalar cl_blue = new Scalar(255, 0, 0);
-	Scalar cl_red = new Scalar(0, 0, 255); 
+	Scalar cl_red = new Scalar(0, 0, 255);
+	Scalar cl_green = new Scalar(0, 255, 0);
 	Scalar cl_lgreen = new Scalar(100, 100, 150);
 	Scalar cl_lblue = new Scalar(150, 100, 100);
 	// Configuration END ==============================
@@ -149,8 +152,66 @@ class ztable {
 					, 1, clyel);			
 	}
 	
-	public void draw_ultilize_z_jumping() {
+	public void draw_ultilize_z_jumping(Mat img, String str, int[] Z, int l, int r,  int ix, int j1, int j2) {
+
+		int lenbeta = r - ix + 1;
+        int i0 = ix - l;
+
+		/*============================================================
+		 * Visualize ultilization
+		 * v1) Visualize i0 value and Z[i0] value
+		 *     (1.1) highlight lenbeta (filled)
+		 *     (1.2) highlight i0 in two positions (filled)
+		 *         
+		 *     (1.3) Highlight Z[i0] by a border
+		 * v2) Visualize case 1: Z[i0] < lenbeta 
+		 *     (2.1) 
+		 *     (2.2)  
+		 *     		Character box starting at ix
+		 *     		Z table starting at 0
+		 * v3) Visualize case 2: visualize matching 
+		 *============================================================*/
+        
+		// v1) 
+		// (1.1) Highlight lenbeta 
+		Imgproc.rectangle(img, 
+				new Rect( new Point( nMarginL + ix * nWCH, nMarginT - nWCH/2), 
+						    new Size( lenbeta * nWCH, nWCH / 2 )), 
+				cl_lblue,
+				Imgproc.FILLED);
+		// (1.2) Highlight i0
+		Imgproc.rectangle(img, 
+				new Rect( new Point( nMarginL + l * nWCH, nMarginT - nWCH/2), 
+						    new Size( i0 * nWCH, nWCH / 2 )), 
+				cl_lgreen,
+				Imgproc.FILLED); // At the top of characters box
+		Imgproc.rectangle(img, 
+				new Rect( new Point( nMarginL, nMarginT  + 3*nWCH - nWCH/2), 
+						    new Size( i0 * nWCH, nWCH/2 )), 
+				cl_lgreen,
+				2); // At the to of Ztable
 		
+		// (1.3) Highlight Z[i0] 
+		Imgproc.rectangle(img, 
+				new Rect( new Point( nMarginL + i0 * nWCH, nMarginT  + 3*nWCH), 
+						    new Size(nWCH, nWCH )), 
+				cl_green,
+				2);
+		
+		// v2) Case 1
+		if (Z[i0] < lenbeta) {
+			// Draw updated value 
+			Imgproc.rectangle(img, 
+					new Rect( new Point( nMarginL + ix * nWCH, nMarginT  + 3*nWCH), 
+							    new Size(nWCH, nWCH )), 
+					cl_blue,
+					Imgproc.FILLED);
+			
+			Imgproc.putText(img, String.format("%d", Z[i0]), 
+    				new Point(nMarginL + ix*nWCH + nWCH_mgr, nMarginT + 3 * nWCH + nWCH_mgr), 
+    				Imgproc.FONT_HERSHEY_SCRIPT_SIMPLEX
+    				, 1, clyel);
+		}
 	}
 	
 	public int ZTable(char[] S, int[] Z) {
