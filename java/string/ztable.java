@@ -27,7 +27,11 @@ class ztable {
 	Scalar cl_green = new Scalar(0, 255, 0);
 	Scalar cl_lgreen = new Scalar(100, 100, 150);
 	Scalar cl_lblue = new Scalar(150, 100, 100);
+	
+	Scalar cl_lr_range = clyel;
+	Scalar cl_lr_newrange = cl_lgreen;
 	// Configuration END ==============================
+	
 	
 	public void draw_overview(Mat img, String str, int[] Z, int l, int r,  int ix) {
 
@@ -166,10 +170,11 @@ class ztable {
 		 *     (1.3) Highlight Z[i0] by a border
 		 * v2) Visualize case 1: Z[i0] < lenbeta 
 		 *     (2.1) 
-		 *     (2.2)  
 		 *     		Character box starting at ix
 		 *     		Z table starting at 0
-		 * v3) Visualize case 2: visualize matching 
+		 * v3) Visualize case 2: 
+		 * 		(3.1) Visualize matched string [r+1,j2) and [lenbeta+1,j1] 
+		 * 		(3.2) Visualize updated [l,r] 
 		 *============================================================*/
         
 		// v1) 
@@ -211,6 +216,42 @@ class ztable {
     				new Point(nMarginL + ix*nWCH + nWCH_mgr, nMarginT + 3 * nWCH + nWCH_mgr), 
     				Imgproc.FONT_HERSHEY_SCRIPT_SIMPLEX
     				, 1, clyel);
+			
+			// Visualize Z[i0] next to lenbeta 
+			Imgproc.rectangle(img, 
+					new Rect( new Point( nMarginL + ix * nWCH, nMarginT - nWCH), 
+							    new Size( Z[i0] * nWCH, nWCH / 2 )), 
+					cl_lblue,
+					Imgproc.FILLED);
+		}
+		// v3) 
+		else {
+			// (3.1) Visualize matched string [r+1,j2) and [lenbeta+1,j1]
+			Imgproc.rectangle(img, 
+					new Rect(
+							new Point(nMarginL + (r+1) * nWCH, nMarginT), 
+							new Size((j2 - r) * nWCH, nWCH)), 
+					cl_blue, 
+					2);
+			Imgproc.rectangle(img, 
+					new Rect(
+							new Point(nMarginL + (r+1) * nWCH, nMarginT), 
+							new Size((j2 - r) * nWCH, nWCH)), 
+					cl_blue, 
+					2);
+			// 3.2) New [l,r]
+			Imgproc.rectangle(img, 
+    				new Rect(
+    						new Point(nMarginL + l * nWCH, nMarginT +  nWCH), 
+    						new Size( (r-l+1) * nWCH, nWCH)), 
+    				cl_lr_newrange,
+    				Imgproc.FILLED);
+
+    		Imgproc.putText(img, String.format("[l=%d; r=%d]", l, r), 
+    				new Point(nMarginL + l * nWCH + nWCH_mgr, nMarginT + nWCH + nWCH_mgr),
+    				Imgproc.FONT_HERSHEY_SIMPLEX, 
+    				1, 
+    				clyel);
 		}
 	}
 	
@@ -369,6 +410,7 @@ class ztable {
         	}
 
         	// v5) [l,r]
+        	
         }
 	}
 	
