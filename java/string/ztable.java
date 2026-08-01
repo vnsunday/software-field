@@ -17,7 +17,7 @@ class ztable {
 	// Configuration==================================
     int nW = 1280;  /// 720p Standard
 	int nH = 720;
-	int nMarginL = 100;  // Left
+	int nMarginL = 150;  // Left
 	int nMarginT = 200;  // Top
 	int nWCH = 50; // Character - width 
 	int nWCH_mgr = nWCH / 5; // Margin of Character box
@@ -29,9 +29,11 @@ class ztable {
 	Scalar cl_green = new Scalar(0, 255, 0);
 	Scalar cl_lgreen = new Scalar(100, 100, 150);
 	Scalar cl_lblue = new Scalar(150, 100, 100);
+	Scalar cl_lcyan = new Scalar(200, 200, 100);
 	
 	Scalar cl_lr_range = clyel;
 	Scalar cl_lr_newrange = cl_lgreen;
+	Scalar cl_current_index = cl_lcyan;
 	
 	boolean FLAG_VIDEO = true;
 	String FILE_PREFIX = "ztable_";
@@ -45,22 +47,36 @@ class ztable {
 		if (!FLAG_VIDEO) return;
 		/*==============================
     	 * Visualize a scene 
+    	 * v0) Title 
     	 * v1) Highlight Current step (hight light selected)
     	 * v1) Draw characters box
     	 * v2) Draw ztable 
     	 * v3) Visualize [l,r] range
     	 * v5) Transition states  
     	 *==============================*/
+		
+		// v0) Title
+		Imgproc.putText(img, "String", 
+				new Point(nMarginL - 100, nMarginT + nWCH - nWCH_mgr), 
+				Imgproc.FONT_HERSHEY_DUPLEX, 
+				1, 
+				clwhite);
+		Imgproc.putText(img, "ZTable", 
+				new Point(nMarginL - 100, nMarginT + 4 * nWCH - nWCH_mgr), 
+				Imgproc.FONT_HERSHEY_DUPLEX, 
+				1, 
+				clwhite);
+				
     	// v1) High light selected 
     	Imgproc.rectangle(img, 
     			new Rect(new Point(nMarginL + ix * nWCH , nMarginT), 
 						 new Size(nWCH, nWCH)), 
-    			clyel, 
+    			cl_current_index, 
     			Imgproc.FILLED);
     	Imgproc.rectangle(img, 
     			new Rect(new Point(nMarginL + ix*nWCH, nMarginT + 3 * nWCH), 
     					 new Size(nWCH, nWCH)), 
-    			clyel, 
+    			cl_current_index, 
     			Imgproc.FILLED);
     	
     	//v1) Character box
@@ -69,8 +85,8 @@ class ztable {
     								new Size(nWCH, nWCH)), 
     									clwhite ,1);
     		Imgproc.putText(img, str.substring(i, i+1), 
-    						new Point(nMarginL + i* nWCH + nWCH_mgr, nMarginT + nWCH_mgr), 
-    						Imgproc.FONT_HERSHEY_SIMPLEX, 1, clyel);
+    						new Point(nMarginL + i* nWCH + nWCH_mgr, nMarginT + nWCH - nWCH_mgr), 
+    						Imgproc.FONT_HERSHEY_DUPLEX, 1, clyel);
     	}
     	// v2) ztable
     	for (int i=0; i<n;i++) {
@@ -79,8 +95,8 @@ class ztable {
     									 new Size(nWCH, nWCH)), 
     				clwhite, 1);
     		Imgproc.putText(img, String.format("%d", Z[i]), 
-    				new Point(nMarginL + i*nWCH + nWCH_mgr, nMarginT + 3 * nWCH + nWCH_mgr), 
-    				Imgproc.FONT_HERSHEY_SCRIPT_SIMPLEX
+    				new Point(nMarginL + i*nWCH + nWCH_mgr, nMarginT + 3 * nWCH + nWCH - nWCH_mgr), 
+    				Imgproc.FONT_HERSHEY_DUPLEX
     				, 1, clyel);
     	}
     	
@@ -94,8 +110,8 @@ class ztable {
     				Imgproc.FILLED);
 
     		Imgproc.putText(img, String.format("[l=%d; r=%d]", l, r), 
-    				new Point(nMarginL + l * nWCH + nWCH_mgr, nMarginT + nWCH + nWCH_mgr),
-    				Imgproc.FONT_HERSHEY_SIMPLEX, 
+    				new Point(nMarginL + l * nWCH + nWCH_mgr, nMarginT + 2 * nWCH - nWCH_mgr),
+    				Imgproc.FONT_HERSHEY_DUPLEX, 
     				1, 
     				clyel);
     	}
@@ -158,8 +174,8 @@ class ztable {
 						Imgproc.FILLED);
 		Imgproc.putText(img, String.format("%d", Z[ix]), 
 					new Point(nMarginL + ix*nWCH + nWCH_mgr, 
-							  nMarginT + 3 * nWCH + nWCH_mgr), 
-					Imgproc.FONT_HERSHEY_SCRIPT_SIMPLEX
+							  nMarginT + 4 * nWCH - nWCH_mgr), 
+					Imgproc.FONT_HERSHEY_DUPLEX
 					, 1, clyel);			
 	}
 	
@@ -221,8 +237,8 @@ class ztable {
 					Imgproc.FILLED);
 			
 			Imgproc.putText(img, String.format("%d", Z[i0]), 
-    				new Point(nMarginL + ix*nWCH + nWCH_mgr, nMarginT + 3 * nWCH + nWCH_mgr), 
-    				Imgproc.FONT_HERSHEY_SCRIPT_SIMPLEX
+    				new Point(nMarginL + ix*nWCH + nWCH_mgr, nMarginT + 4 * nWCH - nWCH_mgr), 
+    				Imgproc.FONT_HERSHEY_DUPLEX
     				, 1, clyel);
 			
 			// Visualize Z[i0] next to lenbeta 
@@ -256,8 +272,8 @@ class ztable {
     				Imgproc.FILLED);
 
     		Imgproc.putText(img, String.format("[l=%d; r=%d]", l, r), 
-    				new Point(nMarginL + l * nWCH + nWCH_mgr, nMarginT + nWCH + nWCH_mgr),
-    				Imgproc.FONT_HERSHEY_SIMPLEX, 
+    				new Point(nMarginL + l * nWCH + nWCH_mgr, nMarginT + 2*nWCH - nWCH_mgr),
+    				Imgproc.FONT_HERSHEY_DUPLEX, 
     				1, 
     				clyel);
 		}
