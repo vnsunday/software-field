@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -8,6 +9,7 @@ import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.highgui.HighGui;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 class ztable {
@@ -30,12 +32,17 @@ class ztable {
 	
 	Scalar cl_lr_range = clyel;
 	Scalar cl_lr_newrange = cl_lgreen;
+	
+	boolean FLAG_VIDEO = true;
+	String FILE_PREFIX = "ztable_";
 	// Configuration END ==============================
 	
 	
 	public void draw_overview(Mat img, String str, int[] Z, int l, int r,  int ix) {
-
+		
 		int n = str.length();
+		
+		if (!FLAG_VIDEO) return;
 		/*==============================
     	 * Visualize a scene 
     	 * v1) Highlight Current step (hight light selected)
@@ -104,7 +111,7 @@ class ztable {
 		 * 		(2.1) visualize zero matched prefix. (by red border)
 		 * 	(c3) Highlight updated Z[ix] 
 		 *============================================================*/
-		
+		if (!FLAG_VIDEO) return;
 		// c1.
 		if (j2 > ix) {
 			// c1.1) Highlight matched
@@ -157,7 +164,8 @@ class ztable {
 	}
 	
 	public void draw_ultilize_z_jumping(Mat img, String str, int[] Z, int l, int r,  int ix, int j1, int j2) {
-
+		if (!FLAG_VIDEO) return;
+		
 		int lenbeta = r - ix + 1;
         int i0 = ix - l;
 
@@ -255,6 +263,11 @@ class ztable {
 		}
 	}
 	
+	public void SaveImage(Mat img, int imgid) {
+		if (!FLAG_VIDEO) return;
+		Imgcodecs.imwrite(String.format("%s_%03d.png", FILE_PREFIX, imgid), img);
+	}
+	
 	public int ZTable(char[] S, int[] Z) {
 	    int i = 1;
 	    int i0;
@@ -265,7 +278,8 @@ class ztable {
 	    int lenbeta = 0;
 	    int n = S.length;
 	    // Visualization 
-	    int img = 0; // image  index
+	    int imgid = 0; // image  index
+	    String str = new String(S);
 	    
 	    /*==================================================
 	     * Put visualization 
@@ -279,12 +293,18 @@ class ztable {
 
 	    while ( i < n ) {
 	    	
+	    	// a1) 
+	    	Mat img = new Mat(nH, nW, CvType.CV_8UC3, new Scalar(0, 0, 0));
+	    	draw_overview(img, str, Z, l, r, i);
+	    	SaveImage(img, imgid++);
+	    	// a1) END Visualize==========
+	    		
 	        if (i > r) {
 	            j2 = i;
 	            j1 = 0;
 	        
 	            /* Compare to the prefix */
-	            while (S[j1] == S[j2] && j2 < n) { j1++; j2++;}
+	            while (j2 < n && S[j1] == S[j2]) { j1++; j2++;}
 
 	            /* Found */
 	            if (j2 > i) {
@@ -295,6 +315,13 @@ class ztable {
 	            else {          
 	                Z[i] = 0;
 	            }
+	            
+	            // a2) Visualize 2==========================================
+	            Mat img1 = new Mat(nH, nW, CvType.CV_8UC3, new Scalar(0, 0, 0));
+	            draw_overview(img1, str, Z, l, r, i);
+	            draw_compare_prefix(img1, str, Z, l, r, i, j2);
+	            SaveImage(img1, imgid++);
+	            // END =====================================================
 	        }
 	        else {
 	            lenbeta = r - i + 1;
@@ -317,6 +344,13 @@ class ztable {
 	                r = j2 - 1;
 	                Z[i] = (j2 - i);
 	            }
+	            
+	            // a3) Visualize 3==========================================
+	            Mat img2 = new Mat(nH, nW, CvType.CV_8UC3, new Scalar(0, 0, 0));
+	            draw_overview(img2, str, Z, l, r, i);
+	            draw_ultilize_z_jumping(img2, str, Z, l, r, i, j1, j2);
+	            SaveImage(img2, imgid++);
+	            // END =====================================================
 	        }
 	        i++;
 	    }
@@ -326,14 +360,12 @@ class ztable {
 	public void ztable_visualize() {
 		/*============================================================
          * 	Configuration
-         *============================================================*/					
-		String str = "abcdef";
-		int n = str.length();
-		Mat img = new Mat(nW, nH, CvType.CV_8UC3, new Scalar(0, 0, 0));
+         *============================================================*/	
+		String str = "abcaabbacaabcaedebbba";
 		int[] Z = new int[str.length()];
-		int l = 0;
-		int r = 0;
-        
+		
+		ZTable(str.toCharArray(), Z);
+		System.out.println(Arrays.toString(Z));
         /*========================================
          * Scripts/Scenes
          * S1. Print all characters and Table
@@ -348,70 +380,6 @@ class ztable {
          *    [l,r]: right-most endpoint of a 2-box beginning >= i
          *    ztable
          *------------------------------*/
-		
-		int ix = 1; // Current step
-        while (ix < n) {
-        	// Update a scene
-        	
-        	/*==============================
-        	 * Visualize a scene 
-        	 * v1) Highlight Current step (hight light selected)
-        	 * v1) Draw characters box
-        	 * v2) Draw ztable 
-        	 * v3) Visualize [l,r] range
-        	 * v5) Transition states  
-        	 *==============================*/
-        	// v1) High light selected 
-        	Imgproc.rectangle(img, 
-        			new Rect(new Point(nMarginL + ix * nWCH , nMarginT), 
-							 new Size(nWCH, nWCH)), 
-        			clyel, 
-        			Imgproc.FILLED);
-        	Imgproc.rectangle(img, 
-        			new Rect(new Point(nMarginL + ix*nWCH, nMarginT + 3 * nWCH), 
-        					 new Size(nWCH, nWCH)), 
-        			clyel, 
-        			Imgproc.FILLED);
-        	
-        	//v1) Character box
-        	for (int i=0; i<n; i++) {
-        		Imgproc.rectangle(img, new Rect(new Point(nMarginL + i * nWCH , nMarginT), 
-        								new Size(nWCH, nWCH)), 
-        									clwhite ,1);
-        		Imgproc.putText(img, str.substring(i, i+1), 
-        						new Point(nMarginL + i* nWCH + nWCH_mgr, nMarginT + nWCH_mgr), 
-        						Imgproc.FONT_HERSHEY_SIMPLEX, 1, clyel);
-        	}
-        	// v2) ztable
-        	for (int i=0; i<n;i++) {
-        		Imgproc.rectangle(img, new Rect(
-        									 new Point(nMarginL + i*nWCH, nMarginT + 3 * nWCH), 
-        									 new Size(nWCH, nWCH)), 
-        				clwhite, 1);
-        		Imgproc.putText(img, String.format("%d", Z[i]), 
-        				new Point(nMarginL + i*nWCH + nWCH_mgr, nMarginT + 3 * nWCH + nWCH_mgr), 
-        				Imgproc.FONT_HERSHEY_SCRIPT_SIMPLEX
-        				, 1, clyel);
-        	}
-        	
-        	// v3) [l,r] range
-        	if (l >= 1) {
-        		Imgproc.rectangle(img, 
-        				new Rect(
-        						new Point(nMarginL + l * nWCH, nMarginT +  nWCH), 
-        						new Size( (r-l+1) * nWCH, nWCH)), 
-        				cl_lgreen,
-        				Imgproc.FILLED);
-
-        		Imgproc.putText(img, String.format("[l=%d; r=%d]", l, r), 
-        				new Point(nMarginL + l * nWCH + nWCH_mgr, nMarginT + nWCH + nWCH_mgr),
-        				Imgproc.FONT_HERSHEY_SIMPLEX
-        				, 1, clyel);
-        	}
-
-        	// v5) [l,r]
-        	
-        }
 	}
 	
 	public static void main(String[] args) {
