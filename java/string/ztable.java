@@ -118,7 +118,7 @@ class ztable {
     	}
     	
     	// v4) Status text 
-    	String status = String.format("Scanning index: %02d\r\n[l,r]=[%02d,%02d]", ix, l, r);
+    	String status = String.format("Scanning index: %02d", ix);
 
     	Imgproc.putText(img, status, 
 				new Point(nMarginL, nMarginT + 4 * nWCH + nWCH - nWCH_mgr), 
@@ -206,7 +206,8 @@ class ztable {
 		Imgproc.putText(img, status, 
 							new Point(nMarginL, nMarginT + 4* nWCH), 
 							Imgproc.FONT_HERSHEY_DUPLEX,
-							l, cl_blue, 
+							1, 
+							clyel, 
 							1, 
 							Imgproc.LINE_AA , 
 							false);  // false: Top-Left direction
@@ -284,7 +285,7 @@ class ztable {
 					Imgproc.FILLED);
 			
 			// Status text
-			String.format("\r\n    Z[%02d]=%02d < lenbeta=%02d\r\n    Z[%02d]=Z[i0=%02d]=%02d",
+			status += String.format("\r\n    Z[%02d]=%02d < lenbeta=%02d\r\n    Z[%02d]=Z[i0=%02d]=%02d",
                     i0, Z[i0], lenbeta,
                     ix, i0, Z[i0]);
 		}
@@ -316,10 +317,26 @@ class ztable {
     				Imgproc.FONT_HERSHEY_DUPLEX, 
     				1, 
     				clyel);
-    		String.format("    Z[%02d]=%d>=lenbeta=%d\r\n",
-                    ix, i0, Z[i0], lenbeta);
+
+    		// Status
+    		String str_matched = j2 > (r+1) 
+    				? String.format("Matched: %s", str.substring(r+1, j2)) 
+    				: String.format("Mismatched %c != %c", str.charAt(lenbeta + 1), str.charAt(r+1));  
+    		status += String.format("\r\n    Z[%02d]=%d>=lenbeta=%d\r\n%s\r\nZ=%02d",
+                    ix, i0, Z[i0], lenbeta,
+                    str_matched,
+                    Z[ix]);
 		}
-		// v4) Status update 
+		// v4) Status update
+		Imgproc.putText(img, status, 
+				new Point(nMarginL, nMarginT + 4* nWCH), 
+				Imgproc.FONT_HERSHEY_DUPLEX,
+				1, 
+				clyel, 
+				1, 
+				Imgproc.LINE_AA , 
+				false);  // false: Top-Left direction
+		
 	}
 	
 	public void SaveImage(Mat img, int imgid) {
