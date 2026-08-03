@@ -17,7 +17,7 @@ class ztable {
 	// Configuration==================================
     int nW = 1280;  /// 720p Standard
 	int nH = 720;
-	int nMarginL = 150;  // Left
+	int nMarginL = 200;  // Left
 	int nMarginT = 200;  // Top
 	int nWCH = 50; // Character - width 
 	int nWCH_mgr = nWCH / 5; // Margin of Character box
@@ -52,7 +52,8 @@ class ztable {
     	 * v1) Draw characters box
     	 * v2) Draw ztable 
     	 * v3) Visualize [l,r] range
-    	 * v5) Transition states  
+    	 * v4) Status text: 
+    	 *  	Scanning current index
     	 *==============================*/
 		
 		// v0) Title
@@ -115,6 +116,18 @@ class ztable {
     				1, 
     				clyel);
     	}
+    	
+    	// v4) Status text 
+    	String status = String.format("Scanning index: %02d\r\n[l,r]=[%02d,%02d]", ix, l, r);
+
+    	Imgproc.putText(img, status, 
+				new Point(nMarginL, nMarginT + 4 * nWCH + nWCH - nWCH_mgr), 
+				Imgproc.FONT_HERSHEY_DUPLEX, 
+				1, 
+				clyel,
+				1,
+				Imgproc.LINE_AA,
+				false);  // false: Top-Left direction
 	}
 	
 	public void draw_compare_prefix(Mat img, String str, int[] Z, int l, int r,  int ix, int j2) {
@@ -125,9 +138,12 @@ class ztable {
 		 * 		(1.2) Highlight updated Z[ix] 
 		 * 	(c2) 
 		 * 		(2.1) visualize zero matched prefix. (by red border)
-		 * 	(c3) Highlight updated Z[ix] 
+		 * 	(c3) Highlight updated Z[ix]
+		 * 	(c4) Status Text 
 		 *============================================================*/
 		if (!FLAG_VIDEO) return;
+		
+		String status = ""; // Ignore the 1st line
 		// c1.
 		if (j2 > ix) {
 			// c1.1) Highlight matched
@@ -147,6 +163,10 @@ class ztable {
 					cl_blue, 
 					2);
 			
+			status += String.format("\r\n    (i=%02d>r=%02d). String Matched: %s\r\n    [l,r]=[%02d;=%02d];Z=%02d\r\n",
+                    ix, r, 
+                    str.substring(ix, j2),
+                    ix, j2-1, j2-ix);
 		}
 		// c2) 
 		else {
@@ -164,6 +184,10 @@ class ztable {
 							new Size(nWCH, nWCH)), 
 					cl_red, 
 					2);
+			
+			status += String.format("\r\n    (i=%02d>r=%02d). Prefix Mismatch %c != %c\r\n    Z=0",
+                    ix, r,
+                    str.charAt(0),str.charAt(ix));
 		}
 		
 		// c3) Highlight updated Z[ix]
@@ -176,7 +200,16 @@ class ztable {
 					new Point(nMarginL + ix*nWCH + nWCH_mgr, 
 							  nMarginT + 4 * nWCH - nWCH_mgr), 
 					Imgproc.FONT_HERSHEY_DUPLEX
-					, 1, clyel);			
+					, 1, clyel);		
+		
+		// c4) 
+		Imgproc.putText(img, status, 
+							new Point(nMarginL, nMarginT + 4* nWCH), 
+							Imgproc.FONT_HERSHEY_DUPLEX,
+							l, cl_blue, 
+							1, 
+							Imgproc.LINE_AA , 
+							false);  // false: Top-Left direction
 	}
 	
 	public void draw_ultilize_z_jumping(Mat img, String str, int[] Z, int l, int r,  int ix, int j1, int j2) {
@@ -184,6 +217,7 @@ class ztable {
 		
 		int lenbeta = r - ix + 1;
         int i0 = ix - l;
+        String status = "";
 
 		/*============================================================
 		 * Visualize ultilization
@@ -199,6 +233,7 @@ class ztable {
 		 * v3) Visualize case 2: 
 		 * 		(3.1) Visualize matched string [r+1,j2) and [lenbeta+1,j1] 
 		 * 		(3.2) Visualize updated [l,r] 
+		 * v4) Status text
 		 *============================================================*/
         
 		// v1) 
@@ -247,6 +282,11 @@ class ztable {
 							    new Size( Z[i0] * nWCH, nWCH / 2 )), 
 					cl_lblue,
 					Imgproc.FILLED);
+			
+			// Status text
+			String.format("\r\n    Z[%02d]=%02d < lenbeta=%02d\r\n    Z[%02d]=Z[i0=%02d]=%02d",
+                    i0, Z[i0], lenbeta,
+                    ix, i0, Z[i0]);
 		}
 		// v3) 
 		else {
@@ -276,7 +316,10 @@ class ztable {
     				Imgproc.FONT_HERSHEY_DUPLEX, 
     				1, 
     				clyel);
+    		String.format("    Z[%02d]=%d>=lenbeta=%d\r\n",
+                    ix, i0, Z[i0], lenbeta);
 		}
+		// v4) Status update 
 	}
 	
 	public void SaveImage(Mat img, int imgid) {
