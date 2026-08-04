@@ -32,8 +32,9 @@ class ztable {
 	Scalar cl_lcyan = new Scalar(200, 200, 100);
 	
 	Scalar cl_lr_range = clyel;
-	Scalar cl_lr_newrange = cl_lgreen;
+	Scalar cl_lr_newrange = cl_blue;
 	Scalar cl_current_index = cl_lcyan;
+	Scalar cltext = clwhite;
 	
 	boolean FLAG_VIDEO = true;
 	String FILE_PREFIX = "ztable_";
@@ -78,12 +79,12 @@ class ztable {
 		
 		// v0) Title
 		Imgproc.putText(img, "String", 
-				new Point(nMarginL - 100, nMarginT + nWCH - nWCH_mgr), 
+				new Point(nMarginL - 150, nMarginT + nWCH - nWCH_mgr), 
 				Imgproc.FONT_HERSHEY_DUPLEX, 
 				1, 
 				clwhite);
 		Imgproc.putText(img, "ZTable", 
-				new Point(nMarginL - 100, nMarginT + 4 * nWCH - nWCH_mgr), 
+				new Point(nMarginL - 150, nMarginT + 4 * nWCH - nWCH_mgr), 
 				Imgproc.FONT_HERSHEY_DUPLEX, 
 				1, 
 				clwhite);
@@ -130,7 +131,7 @@ class ztable {
     				cl_lgreen,
     				Imgproc.FILLED);
 
-    		Imgproc.putText(img, String.format("[l=%d; r=%d]", l, r), 
+    		Imgproc.putText(img, "[l,r]", 
     				new Point(nMarginL + l * nWCH + nWCH_mgr, nMarginT + 2 * nWCH - nWCH_mgr),
     				Imgproc.FONT_HERSHEY_DUPLEX, 
     				1, 
@@ -144,7 +145,7 @@ class ztable {
 				new Point(nMarginL, nMarginT + 5 * nWCH), 
 				Imgproc.FONT_HERSHEY_DUPLEX, 
 				1, 
-				clyel,
+				cltext,
 				1,
 				Imgproc.LINE_8);
 	}
@@ -186,7 +187,7 @@ class ztable {
 					2);
 			status[nS++] = String.format("    (i=%02d>r=%02d)", ix, r_prev);
 			status[nS++] = String.format("    Prefix-Matched: %s", str.substring(ix, j2));
-			status[nS++] = String.format("    [l,r] updated = [%02d;=%02d]", ix, j2-1);
+			status[nS++] = String.format("    [l,r] updated = [%02d;%02d]", ix, j2-1);
 			status[nS++] = String.format("    Z[%02d]=%02d", ix, j2-ix);
 		}
 		// c2) 
@@ -224,7 +225,7 @@ class ztable {
 					, 1, clyel);		
 		
 		// c4) 
-		draw_text_multilines(img, nMarginL, nMarginT + 5*nWCH, status, nS, Imgproc.FONT_HERSHEY_DUPLEX, 1, 1, clyel);
+		draw_text_multilines(img, nMarginL, nMarginT + 5*nWCH, status, nS, Imgproc.FONT_HERSHEY_DUPLEX, 1, 1, clwhite);
 	}
 	
 	public void draw_ultilize_z_jumping(Mat img, String str, int[] Z, int l_prev, int r_prev, int l, int r,  int ix, int i0, int j1, int j2, String strbeta) {
@@ -261,7 +262,7 @@ class ztable {
 				Imgproc.FILLED);
 		// (1.2) Highlight i0
 		Imgproc.rectangle(img, 
-				new Rect( new Point( nMarginL + l * nWCH, nMarginT - nWCH/2), 
+				new Rect( new Point( nMarginL + l_prev * nWCH, nMarginT - nWCH/2), 
 						    new Size( i0 * nWCH, nWCH / 2 )), 
 				cl_lgreen,
 				Imgproc.FILLED); // At the top of characters box
@@ -269,7 +270,7 @@ class ztable {
 				new Rect( new Point( nMarginL, nMarginT  + 3*nWCH - nWCH/2), 
 						    new Size( i0 * nWCH, nWCH/2 )), 
 				cl_lgreen,
-				2); // At the to of Ztable
+				Imgproc.FILLED); // At the to of Ztable
 		
 		// (1.3) Highlight Z[i0] 
 		Imgproc.rectangle(img, 
@@ -302,7 +303,7 @@ class ztable {
 			// Status text
 			status[nS++] = String.format("    Z[%02d]=%02d < length(%s)=%02d",
                     i0, Z[i0], strbeta, lenbeta);
-			status[nS++] = String.format("    Z[%02d]=Z[i0=%02d]=%02d", ix, i0, Z[i0]);
+			status[nS++] = String.format("    Assign Z[%02d] to Z[%02d]=%02d", ix, i0, Z[i0]);
 		}
 		// v3) 
 		else {
@@ -327,7 +328,7 @@ class ztable {
     				cl_lr_newrange,
     				Imgproc.FILLED);
 
-    		Imgproc.putText(img, String.format("[l=%d; r=%d]", l, r), 
+    		Imgproc.putText(img, "[l;r]", 
     				new Point(nMarginL + l * nWCH + nWCH_mgr, nMarginT + 2*nWCH - nWCH_mgr),
     				Imgproc.FONT_HERSHEY_DUPLEX, 
     				1, 
@@ -336,16 +337,17 @@ class ztable {
     		// Status
     		String str_matched = j2 > (r_prev +1) 
     				? String.format("Matched: %s", str.substring(r_prev +1, j2)) 
-    				: String.format("Mismatched %c != %c", str.charAt(lenbeta + 1), str.charAt(r+1));
+    				: String.format("Mismatched %c != %c", str.charAt(lenbeta + 1), str.charAt(r_prev+1));
     		status[nS++] = String.format("    Z[%02d]=%d>=length(%s)=%d",
                     i0, Z[i0], strbeta, lenbeta);
     		status[nS++] = "    " + str_matched;
+    		status[nS++] = String.format("    [l;r] updated = [%02d;%02d]" , l, r);
     		status[nS++] = String.format("    Z[%02d]=%02d", ix, Z[ix]);
 		}
 		// v4) Status update
 		draw_text_multilines(img, nMarginL, nMarginT  + 5*nWCH, 
 								status, nS , 
-								Imgproc.FONT_HERSHEY_DUPLEX, 1, 1, clyel);
+								Imgproc.FONT_HERSHEY_DUPLEX, 1, 1, clwhite);
 	}
 	
 	public void SaveImage(Mat img, int imgid) {
