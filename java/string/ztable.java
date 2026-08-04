@@ -248,7 +248,9 @@ class ztable {
 		 *     		Character box starting at ix
 		 *     		Z table starting at 0
 		 * v3) Visualize case 2: 
-		 * 		(3.1) Visualize matched string [r+1,j2) and [lenbeta+1,j1] 
+		 * 		(3.1)  
+		 * 			3.1.1) Visualize matched string [r_prev+1,j2) and [i0+1,j1]
+		 * 			3.1.2) Visualize unmatched character [r_prev+1] and [i0+1] 
 		 * 		(3.2) Visualize updated [l,r] 
 		 * v4) Status text
 		 *============================================================*/
@@ -307,19 +309,38 @@ class ztable {
 		}
 		// v3) 
 		else {
-			// (3.1) Visualize matched string [r+1,j2) and [lenbeta+1,j1]
-			Imgproc.rectangle(img, 
-					new Rect(
-							new Point(nMarginL + (r+1) * nWCH, nMarginT), 
-							new Size((j2 - r) * nWCH, nWCH)), 
-					cl_blue, 
-					2);
-			Imgproc.rectangle(img, 
-					new Rect(
-							new Point(nMarginL + (r+1) * nWCH, nMarginT), 
-							new Size((j2 - r) * nWCH, nWCH)), 
-					cl_blue, 
-					2);
+			
+			if (j2 > (r_prev +1) ) {
+				// (3.1.1) Visualize matched string [r+1,j2) and [lenbeta+1,j1]
+				Imgproc.rectangle(img, 
+						new Rect(
+								new Point(nMarginL + (r_prev+1) * nWCH, nMarginT), 
+								new Size((j2 - r_prev - 1) * nWCH, nWCH)), 
+						cl_blue, 
+						2);
+				Imgproc.rectangle(img, 
+						new Rect(
+								new Point(nMarginL + (i0+1) * nWCH, nMarginT), 
+								new Size((j2 - r_prev - 1) * nWCH, nWCH)), 
+						cl_blue, 
+						2);
+			} 
+			else {
+				// (3.1.2) Visualize unmatched 
+				Imgproc.rectangle(img, 
+						new Rect(
+								new Point(nMarginL + (r_prev+1) * nWCH, nMarginT), 
+								new Size(nWCH, nWCH)), 
+						cl_red, 
+						2);
+				Imgproc.rectangle(img, 
+						new Rect(
+								new Point(nMarginL + (i0+1) * nWCH, nMarginT), 
+								new Size(nWCH, nWCH)), 
+						cl_red, 
+						2);
+			}
+			
 			// 3.2) New [l,r]
 			Imgproc.rectangle(img, 
     				new Rect(
@@ -337,7 +358,7 @@ class ztable {
     		// Status
     		String str_matched = j2 > (r_prev +1) 
     				? String.format("Matched: %s", str.substring(r_prev +1, j2)) 
-    				: String.format("Mismatched %c != %c", str.charAt(lenbeta + 1), str.charAt(r_prev+1));
+    				: String.format("Mismatched %c != %c", str.charAt(i0 + 1), str.charAt(r_prev+1));
     		status[nS++] = String.format("    Z[%02d]=%d>=length(%s)=%d",
                     i0, Z[i0], strbeta, lenbeta);
     		status[nS++] = "    " + str_matched;
@@ -428,7 +449,7 @@ class ztable {
 	            }
 	            else {
 	                j2 = r + 1;
-	                j1 = lenbeta + 1; // (r - l) + 1;
+	                j1 = i0 + 1; // (r - l) + 1;
 	            
 	                while (S[j1] == S[j2] && j2 < n) {
 	                    j1 ++;
