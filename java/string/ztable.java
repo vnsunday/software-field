@@ -23,15 +23,17 @@ class ztable {
 	int nWCH_mgr = nWCH / 5; // Margin of Character box
 	
 	Scalar clwhite = new Scalar(255, 255, 255);
-	Scalar clyel = new Scalar(0,2255,255);
+	Scalar clyel = new Scalar(0,255,255);
 	Scalar cl_blue = new Scalar(255, 0, 0);
 	Scalar cl_red = new Scalar(0, 0, 255);
 	Scalar cl_green = new Scalar(0, 255, 0);
 	Scalar cl_lgreen = new Scalar(100, 100, 150);
 	Scalar cl_lblue = new Scalar(150, 100, 100);
 	Scalar cl_lcyan = new Scalar(200, 200, 100);
+	Scalar cl_silver = new Scalar(180, 180, 180);
 	
-	Scalar cl_lr_range = clyel;
+	
+	Scalar cl_lr_range = cl_silver;
 	Scalar cl_lr_newrange = cl_blue;
 	Scalar cl_current_index = cl_lcyan;
 	Scalar cltext = clwhite;
@@ -72,6 +74,7 @@ class ztable {
     	 * v1) Highlight Current step (hight light selected)
     	 * v1) Draw characters box
     	 * v2) Draw ztable 
+    	 * v3) Draw array indexes  
     	 * v3) Visualize [l,r] range
     	 * v4) Status text: 
     	 *  	Scanning current index
@@ -122,13 +125,21 @@ class ztable {
     				, 1, clyel);
     	}
     	
+    	// v3) Array indexes
+    	for (int i=0; i<n; i++) {
+    		Imgproc.putText(img, String.format("%d", i), 
+    				new Point(nMarginL + i*nWCH + nWCH_mgr, nMarginT - nWCH_mgr ), 
+    				Imgproc.FONT_HERSHEY_SIMPLEX, 0.8, 
+    				cltext);
+    	}
+    	
     	// v3) [l,r] range
     	if (l >= 1) {
     		Imgproc.rectangle(img, 
     				new Rect(
     						new Point(nMarginL + l * nWCH, nMarginT +  nWCH), 
     						new Size( (r-l+1) * nWCH, nWCH)), 
-    				cl_lgreen,
+    				cl_lr_range,
     				Imgproc.FILLED);
 
     		Imgproc.putText(img, "[l,r]", 
@@ -139,7 +150,7 @@ class ztable {
     	}
     	
     	// v4) Status text 
-    	String status = String.format("Scanning index: %02d", ix);
+    	String status = String.format("Scanning index: i=%02d", ix);
 
     	Imgproc.putText(img, status, 
 				new Point(nMarginL, nMarginT + 5 * nWCH), 
