@@ -1,3 +1,10 @@
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.io.File;
+import java.io.IOException;
+
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -8,6 +15,25 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 class text_draw {
+	
+	static void LoadFont(String path, float fontsize) throws IOException, FontFormatException {
+		File ff = new File(path);
+		Font baseFont = Font.createFont(Font.TRUETYPE_FONT, ff);
+	}
+	
+	static BufferedImage matToBFI(Mat mat)	{
+		int nW = mat.cols();
+		int nH = mat.rows();
+		int nC = mat.channels();
+		
+		int nT = (nC == 1) ? BufferedImage.TYPE_BYTE_GRAY : 
+							BufferedImage.TYPE_3BYTE_BGR;
+		BufferedImage img = new BufferedImage(nW, nH, nT);
+		byte[] targetPixels =((DataBufferByte)img.getRaster().getDataBuffer()).getData();
+		mat.get(0,0, targetPixels);
+		
+		return img;
+	}
 	
 	static void draw_text_multilines(Mat img, int x, int y, 
 										String[] lines, 
