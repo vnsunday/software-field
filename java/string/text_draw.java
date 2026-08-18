@@ -1,5 +1,8 @@
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
@@ -16,9 +19,10 @@ import org.opencv.imgproc.Imgproc;
 
 class text_draw {
 	
-	static void LoadFont(String path, float fontsize) throws IOException, FontFormatException {
+	static Font LoadFont(String path, float fontsize) throws IOException, FontFormatException {
 		File ff = new File(path);
 		Font baseFont = Font.createFont(Font.TRUETYPE_FONT, ff);
+		return baseFont;
 	}
 	
 	static BufferedImage matToBFI(Mat mat)	{
@@ -33,6 +37,28 @@ class text_draw {
 		mat.get(0,0, targetPixels);
 		
 		return img;
+	}
+	
+	static void BFIToMat(BufferedImage img, Mat mat) {
+		byte[] srcPixels = ((DataBufferByte)img.getRaster().getDataBuffer()).getData();
+		mat.put(0, 0, srcPixels);
+	}
+	
+	static void drawTextWithFont(Mat mat, String text, int x, int y, Color cl, Font font) {
+		BufferedImage bfi = matToBFI(mat);
+		Graphics2D g2d = bfi.createGraphics();
+		
+		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	
+		g2d.setFont(font);
+		g2d.setColor(cl);
+		
+		int fontAscent = g2d.getFontMetrics().getAscent();
+		g2d.drawString(text, x, y + fontAscent);
+		g2d.dispose();
+		
+		BFIToMat(bfi, mat);
 	}
 	
 	static void draw_text_multilines(Mat img, int x, int y, 

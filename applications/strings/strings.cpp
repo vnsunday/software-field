@@ -11,23 +11,27 @@ int main() {
     const char* azBioMR[][2] = {
         { "Time", "1941-" },
         { "Location", "Pittsburgh Pennsylvania-US" },
-        { "", "" },
-        { "", "" },
-        { "", "" },
-        { "", "" },
+        { "Organizations", "Future Concept Division" },
         { "", "" }
-    };
+    }; // 
 
     const char* azBioPR[][2] = {
         { "Time", "1944-" },
-        { "Location", "Melbourne Australlia" },
-        { "", "" },
-        { "", "" },
-        { "", "" },
-        { "", "" },
-        { "", "" }
+        { "Location", "Melbourne Australlia" }
 
     }; // 
+
+    const char* azAA[][2] = {
+        { "Time", "1948" },
+        { "Native", "Italy" },
+        { "Location", "Naples" },
+        { "Location", "Salerno" },
+        { "Location", "Atlanta, US" }
+    };
+
+    const char* szRG[][2] = {
+        { "Location", "Palermo, Italy" }
+    };
 
     int n = sizeof(szAuthor) / sizeof(szAuthor[0]);
     int n1 = sizeof(azBioMR) / sizeof(azBioMR[0]);
