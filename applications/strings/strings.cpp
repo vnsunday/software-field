@@ -29,14 +29,24 @@ int main() {
         { "Location", "Atlanta, US" }
     };
 
-    const char* szRG[][2] = {
+    const char* azRG[][2] = {
         { "Location", "Palermo, Italy" }
+    };
+
+    //  Seminumerical 
+    const char* azRBY[][2] = {
+        { "Time", "1948"},
+        { "Location", "Santiago, Chile" }, 
+        { "Organization", "ACM Fellow" },
+        { "Organization", "IEEE" },
+    };
+    const char* azGG[][2] = {
+        { "", "" }
     };
 
     int n = sizeof(szAuthor) / sizeof(szAuthor[0]);
     int n1 = sizeof(azBioMR) / sizeof(azBioMR[0]);
     int n2 = sizeof(azBioPR) / sizeof(azBioPR[0]);
     printf("Array Length=%d; %d; %d\r\n", n, n1, n2);
-
     return 0;
 }
