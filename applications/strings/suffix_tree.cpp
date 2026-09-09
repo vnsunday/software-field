@@ -5,12 +5,16 @@
 
 using namespace std;
 
+void construct() {
+}
+
 int main()
 {
     string str = "abcdeaabd";
     int nN = str.length() + 1; // Root + Leaves
 
     // Tree structure
+    //    Rooted directed 
     int nR; // Root 
     int edge_l[1000];
     int edge_r[1000];
