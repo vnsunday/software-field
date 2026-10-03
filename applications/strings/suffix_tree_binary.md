@@ -11,6 +11,13 @@ Define. String-depth
 
 Key-features: Any leaf i; the concatenation of the edge-labels on the path from the root to the leaf exactly spells out the suffix of S starting at position i. That is it spells out S[i..m]
 
+## Observation
+Definition does not guarantee that a suffix tree for any string S actually exists.
+    Example:
+        If one suffix of S matches a prefix of another suffix of S then no suffix tree obeying the definition is possible.
+
+## Example
+
 
 # CONSTRUCT SUFFIX TREE
 

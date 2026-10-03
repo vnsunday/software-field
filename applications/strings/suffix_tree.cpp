@@ -1,11 +1,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <algorithm>
-#include <string> 
+#include <string>
+#include <string.h>
+#include <vector>
 
 using namespace std;
 
-void construct() {
+void add_node(int parentID, int newNodeID) {
+}
+
+void construct(const char* S) {
+}
+
+void suffix_extension_rule1() {
+}
+
+vector<string> define_path() {
+    vector<string> vr = { "Root", "Node1", "Node2" };
+    return vr;
+}
+
+vector<string> label() {
+    vector<string> vlb = { "Tree", "Edge", "Value"};
+    return vlb;
 }
 
 int main()
