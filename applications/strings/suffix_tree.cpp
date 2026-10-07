@@ -26,6 +26,19 @@ vector<string> label() {
     return vlb;
 }
 
+void build_suffix_link() {
+    string s1 = "a";
+    string s2 = "ab";
+
+    int n1 = 0;
+    int n2 = 10;
+
+    int nEdgeSuffix = 0;
+    int arr[100][2];
+    arr[nEdgeSuffix][0] = n2; // Path (n2,n1)
+    arr[nEdgeSuffix][1] = n1; 
+}
+
 int main()
 {
     string str = "abcdeaabd";
