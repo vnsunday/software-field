@@ -39,6 +39,20 @@ void build_suffix_link() {
     arr[nEdgeSuffix][1] = n1; 
 }
 
+void observation_1() {
+    // 611
+    int ip; // phase index
+    int je; // Extension index
+    char szBuff[100];
+    string path_label_n1("ba");
+    string path_label_2("a");
+
+    sprintf(szBuff, "extension %d; phase %d", je, jp);
+    string progress_position(szBuff);
+    sprintf(szBuff, "extension %d; phase %d", je + 1, jp + 1);
+    string progress_position(szBuff);
+}
+
 int main()
 {
     string str = "abcdeaabd";
