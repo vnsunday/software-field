@@ -9,41 +9,46 @@
 using namespace std;
 
 string nodes[1000]; 
-string tree_edge[1000][2];
+string tree_edge[1000][3];
 int nnode;
 int nedge;
 
 struct CompareEdge {
-    bool operator()(const string val[2], const string val2[2]) const {
+    bool operator()(const string val[3], const string val2[3]) const {
         return val[0] < val2[0];
     }
 };
 // Tree API 
-string new_node(string node_code, string parent_node, string nodes[], int& nnode, string edges[][2], int& nedge) {
+string new_node(string node_code, string parent_node, string nodes[], int& nnode, string edges[][3], int& nedge) {
     // int* ptr = std::upper_bound(edge_l, edge_l + 10, nR);
     // int* ptr1 = NULL;
     // std::upper_bound()
 
     // Already existed
-    if (binary_search( 
-                        nodes,
-                        nodes + nnode,
-                        node_code)) {
+    if (binary_search(nodes, nodes + nnode, node_code) || 
+        !binary_search(nodes, nodes + nnode, parent_node)) {
         // 
-        return "node already existed";                        
+        return "Invalid node code";                        
     }
 
     string* pupper;
-    if ((pupper = upper_bound(nodes, nodes + nnode, node_code)) != nodes + nnode) {
-        // Insert 
-        std::move_backward(pupper, nodes + nnode, nodes + nnode + 1);
-        (*pupper) = node_code;
-        nnode++;
-    }
+    // Upperbound:
+    // Return value:
+    //    The position 
+
+    // Insert 
+    pupper = upper_bound(nodes, nodes + nnode, node_code);
+    std::move_backward(pupper, nodes + nnode, nodes + nnode + 1);
+    (*pupper) = node_code;
+    nnode++;
 
     // Adding edges (parent_node => node_code)
-    string (*pupedg)[2]; // 
+    string (*pupedg)[3]; // 
     // pupedg = upper_bound()
+    string newedge[] { parent_node, node_code,  ""};
+    pupedg = upper_bound(edges, edges + nedge, newedge, CompareEdge());
+    // Temp
+    // std::move_backward(edges + 0, edges + nedge, edges + nedge + 1);
     return ""; // Empty : Success
 }
 
