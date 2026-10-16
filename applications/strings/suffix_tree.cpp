@@ -10,6 +10,7 @@ using namespace std;
 
 string nodes[1000]; 
 string edges[1000][3]; // Node1,Node2,Label
+string tree_edge[1000][3];
 int nnode;
 int nedge;
 
@@ -31,21 +32,22 @@ string new_node(string node_code, string parent_node, string nodes[], int& nnode
     // std::upper_bound()
 
     // Already existed
-    if (binary_search( 
-                        nodes,
-                        nodes + nnode,
-                        node_code)) {
+    if (binary_search(nodes, nodes + nnode, node_code) || 
+        !binary_search(nodes, nodes + nnode, parent_node)) {
         // 
-        return "node already existed";                        
+        return "Invalid node code";                        
     }
 
     string* pupper;
-    if ((pupper = upper_bound(nodes, nodes + nnode, node_code)) != nodes + nnode) {
-        // Insert 
-        std::move_backward(pupper, nodes + nnode, nodes + nnode + 1);
-        (*pupper) = node_code;
-        nnode++;
-    }
+    // Upperbound:
+    // Return value:
+    //    The position 
+
+    // Insert 
+    pupper = upper_bound(nodes, nodes + nnode, node_code);
+    std::move_backward(pupper, nodes + nnode, nodes + nnode + 1);
+    (*pupper) = node_code;
+    nnode++;
 
     // Adding edges (parent_node => node_code)
     string (*pupedg)[3]; // 
@@ -74,12 +76,16 @@ string new_node(string node_code, string parent_node, string nodes[], int& nnode
     return ""; // Empty : Success
 }
 
-string parent_node_of(string node, string nodes[], int& nnode, string edges[][3], int& nedge, string& parent_node) {
+string parent_node_of(string node, string nodes[], int& nnode, string edges[][3], int& nedge, string& parent_node, string edge_detail[]) {
     // Find all parent nodes of a specified nodes
     
     for (int i=0; i<nedge;i++) {
         if (edges[i][2] == node) {
             parent_node = edges[i][1];
+
+            edge_detail[0] = edges[i][0];
+            edge_detail[1] = edges[i][1];
+            edge_detail[2] = edges[i][2];
             return ""; // Success
         }
     }
@@ -107,13 +113,26 @@ string path_label(string leaf_node, string nodes[], int nnode, string edges[][3]
     string endnode = leaf_node;
     string parent_node;
     vector<string> path;
+    string edgedata[3];
 
+    path.push_back(leaf_node);
+    endnode = leaf_node;
 
     while (parent_node_of(endnode, 
                         nodes, nnode,
                         edges, nedge, 
-                        parent_node).empty()) {
+                        parent_node,
+                        edgedata
+                    ).empty()) {
+
+        
         // path.push_back();
+        if (endnode == "root") {
+            bRootReached = true;
+            break;
+        }
+
+        
     }
 
     return "";
@@ -131,6 +150,8 @@ string ukkonen(string str1) {
             // TODO: find the label here
         }
     }
+
+    return ""; // Success
 }
 
 string find_label() {
